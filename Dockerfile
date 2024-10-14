@@ -1,5 +1,5 @@
 # 使用 Alpine 作为基础镜像
-FROM redhat/ubi8-minimal
+FROM alpine:3
 
 # 设置工作目录
 WORKDIR /app
