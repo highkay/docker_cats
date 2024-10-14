@@ -1,10 +1,9 @@
 name: Build and Push Docker Image
 
 on:
-  # 监听 Endava/cats 项目的新版本发布
   schedule:
-    - cron: "0 0 * * *" # 每天检查一次 Endava cats 的 release 页面
-  workflow_dispatch: # 手动触发
+    - cron: "0 0 * * *"  # 每天检查一次 Endava cats 的 release 页面
+  workflow_dispatch:  # 手动触发
   repository_dispatch:
     types: [cats_release]
 
@@ -13,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Get latest release info from CATS
         id: get_release
@@ -25,8 +24,8 @@ jobs:
             exit 1
           fi
           echo "Latest release: $tag_name"
-          echo "::set-output name=tag::$tag_name"
-      
+          echo "TAG=$tag_name" >> $GITHUB_ENV  # 使用 Environment Files 代替 set-output
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -38,8 +37,7 @@ jobs:
 
       - name: Download latest release
         run: |
-          TAG=${{ steps.get_release.outputs.tag }}
-          CATS_URL="https://github.com/Endava/cats/releases/download/${TAG}/cats_linux_amd64_${TAG}.tar.gz"
+          CATS_URL="https://github.com/Endava/cats/releases/download/${{ env.TAG }}/cats_linux_amd64_${{ env.TAG }}.tar.gz"
           curl -L -o cats.tar.gz "$CATS_URL"
       
       - name: Extract downloaded tar
@@ -47,11 +45,9 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          TAG=${{ steps.get_release.outputs.tag }}
-          docker build -t highkay/cats:$TAG -t highkay/cats:latest .
+          docker build -t highkay/cats:${{ env.TAG }} -t highkay/cats:latest .
 
       - name: Push Docker Image
         run: |
-          TAG=${{ steps.get_release.outputs.tag }}
-          docker push highkay/cats:$TAG
+          docker push highkay/cats:${{ env.TAG }}
           docker push highkay/cats:latest
