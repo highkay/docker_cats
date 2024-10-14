@@ -1,5 +1,5 @@
 # 使用 Alpine 作为基础镜像
-FROM alpine:3
+FROM frolvlad/alpine-glibc:alpine-3_glibc-2.34
 
 # 设置工作目录
 WORKDIR /app
