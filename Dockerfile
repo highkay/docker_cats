@@ -1,5 +1,5 @@
 # 使用 Alpine 作为基础镜像
-FROM frolvlad/alpine-glibc:alpine-3_glibc-2.34
+FROM debian:12-slim
 
 # 设置工作目录
 WORKDIR /app
