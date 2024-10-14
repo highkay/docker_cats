@@ -37,7 +37,8 @@ jobs:
 
       - name: Download latest release
         run: |
-          CATS_URL="https://github.com/Endava/cats/releases/download/${{ env.TAG }}/cats_linux_amd64_${{ env.TAG }}.tar.gz"
+          VERSION=${{ env.TAG#cats- }}  # 从 cats-12.1.0 中提取 12.1.0
+          CATS_URL="https://github.com/Endava/cats/releases/download/${{ env.TAG }}/cats_linux_amd64_${VERSION}.tar.gz"
           curl -L -o cats.tar.gz "$CATS_URL"
       
       - name: Extract downloaded tar
@@ -45,9 +46,11 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t highkay/cats:${{ env.TAG }} -t highkay/cats:latest .
+          VERSION=${{ env.TAG#cats- }}  # 从 cats-12.1.0 中提取 12.1.0
+          docker build -t highkay/cats:${VERSION} -t highkay/cats:latest .
 
       - name: Push Docker Image
         run: |
-          docker push highkay/cats:${{ env.TAG }}
+          VERSION=${{ env.TAG#cats- }}  # 从 cats-12.1.0 中提取 12.1.0
+          docker push highkay/cats:${VERSION}
           docker push highkay/cats:latest
