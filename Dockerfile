@@ -1,6 +1,13 @@
 # 使用 Alpine 作为基础镜像
 FROM debian:12-slim
 
+RUN apt-get update && apt-get install -y ca-certificates curl gnupg lsb-release nodejs mc && \
+    mkdir -m 0755 -p /etc/apt/keyrings && \
+    curl -fsSL http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] http://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    cat /etc/apt/sources.list.d/docker.list && \
+    apt-get update && apt-get install -y docker-ce-cli && \
+    rm -rf /var/lib/apt/lists/*
 # 设置工作目录
 WORKDIR /app
 
